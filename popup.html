@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="popup.js" defer></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            color: #555;
+            width: 400px;
+            height: 110%;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: 25px;
+            font-weight: normal;
+            margin: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            border: 1px solid #ccc;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-collapse: collapse;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <p id="text"></p>
+    <h1>Snapchat Hacks</h1>
+    <hr style="width: 100%;">
+    <table>
+        <thead>
+            <th>Hack</th>
+            <th>Toggle</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Visually Present</td>
+                <td>
+                    <input type="checkbox" id="persistence"/>
+                    <label for="persistence" id="persistence-label">OFF</label>
+                </td>
+            </tr>
+            <tr>
+                <td>Log loaded chats</td>
+                <td>
+                    <button id="chatlogger">Log</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!--Make div a scrollable div-->
+    <div id="logger-output" style="overflow-y: scroll; height: 200px; border: 1px solid black"></div>
+    <button id="save-output">Save output</button>
+</body>
+</html>
