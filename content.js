@@ -13,12 +13,15 @@ chrome.runtime.onMessage.addListener(
         if (message.type === "logger-output-save") {
             logger_output_save(message.value);
         }
+        if (message.type === "query_hacks") {
+            chrome.runtime.sendMessage({type: "query_resp_ct", hacks: query_hacks_response()});
+        }
     }
 );
 
 // Query hacks
 function query_hacks_response() {
-    return "persistence";
+    return {persistence: persistence};    
 }
 
 function save_logger_output_data(content) {
@@ -104,7 +107,7 @@ function chat_logger_hack() {
                     if (logger_check_img(msg)) {  // If message is an image
                         let img = msg.querySelector("div > button > div > div > div > img");
 
-                        chrome.runtime.sendMessage({type:"blob_render", blob: img.src}, function(response){});
+                        //chrome.runtime.sendMessage({type:"blob_render", blob: img.src}, function(response){});
                         output += `<div class="` + (self_send ? "self" : "them") + `">` + `<img style="width:10%" src="` + img.src + `">` + `</div>\n`;
                     }
                         
@@ -125,7 +128,8 @@ function chat_logger_hack() {
         }
         // Else not a chat message
     }
-    chrome.runtime.sendMessage({type:"sv-logger_output", value: output}, function(response){}); // Send output to popup output
+    console.log(output);
+    // chrome.runtime.sendMessage({type:"sv-logger_output", value: output}, function(response){}); // Send output to popup output
 }
 
 function check_if_snap_status(msg) {

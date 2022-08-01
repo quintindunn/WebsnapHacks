@@ -15,6 +15,8 @@ chrome.runtime.onMessage.addListener(
                 logger_output(message.value);
             break;
         }
+        if (message.type === "query_resp_bg") handle_query_hacks_bg_response(message);
+        if (message.type === "query_resp_ct") handle_query_hacks_ct_response(message);
     }
 );
 
@@ -73,21 +75,39 @@ function save_logger_output() {
 
 // Get enabled hacks
 function get_hacks(){
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {type:"queryhacks"}, function(response){
-            console.log(response);
-        });
-    });
+    chrome.runtime.sendMessage({type:"query_hacks"}, function(response){});
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {chrome.tabs.sendMessage(tabs[0].id, {type:"query_hacks"}, function(response){});});
 }
+
+function handle_query_hacks_bg_response(response) {
+    background_hacks = response.hacks;
+        
+    // Block requests
+    block_requests.checked = background_hacks.block_requests;
+    document.getElementById("blockrequests-label").innerText = block_requests.checked ? "ON": "OFF";
+}
+
+function handle_query_hacks_ct_response(response) {
+    content_hacks = response.hacks;
+    
+    // Persistence
+    persistence_elem.checked = content_hacks.persistence;
+    document.getElementById("persistence-label").innerText = persistence_elem.checked ? "ON" : "OFF";
+}
+
 
 // Toggle hacks
 let persistence_elem = document.getElementById("persistence");
 persistence_elem.addEventListener("click", persistence_hack);
 
-let anti_screenshot = document.getElementById("chatlogger");
-anti_screenshot.addEventListener("click", chat_logger_hack);
+let screenlog = document.getElementById("chatlogger");
+screenlog.addEventListener("click", chat_logger_hack);
+
+let block_requests = document.getElementById("blockrequests");
+block_requests.addEventListener("click", block_requests_hack);
 
 function persistence_hack() {
+    console.log("Persist");
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {type:"persistence", value: persistence_elem.checked}, function(response){
         });
@@ -95,9 +115,26 @@ function persistence_hack() {
     document.getElementById("persistence-label").innerText = persistence_elem.checked ? "ON" : "OFF";
 }
 
+function block_requests_hack() {
+    console.log("Block Requests -- popup.js");
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {type:"blockrequests", value: block_requests.checked}, function(response){
+        });
+    });
+    chrome.runtime.sendMessage({type:"blockrequests", value: block_requests.checked}, function(response){
+    });
+    document.getElementById("blockrequests-label").innerText = block_requests.checked ? "ON" : "OFF";
+}
+
 function chat_logger_hack() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {type:"chatlogger", value: anti_screenshot.checked}, function(response){
+        chrome.tabs.sendMessage(tabs[0].id, {type:"chatlogger", value: screenlog.checked}, function(response){
         });
     });
 }
+
+
+// On DOMContentLoaded event (when page is loaded) get enabled hacks
+document.addEventListener("DOMContentLoaded", function() {
+    get_hacks();
+});

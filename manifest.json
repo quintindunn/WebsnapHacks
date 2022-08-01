@@ -15,9 +15,19 @@
     "background": {
         "service_worker": "background.js"
     },
+    "declarative_net_request" : {
+        "rule_resources" : [{
+            "id": "block_requests_hack",
+            "enabled": false,
+            "path": "rules_1.json"
+        }]
+    },
     "offline_enabled": false,
     "permissions": [
-        "tabs"
+        "tabs",
+        "webRequest",
+        "declarativeNetRequest",
+        "declarativeNetRequestFeedback"
     ],
     "icons": {
     },
